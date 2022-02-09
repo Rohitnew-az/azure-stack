@@ -26,6 +26,14 @@ module "securitygroup" {
   app_subnet_id  = module.networking.appsubnet_id
   db_subnet_id   = module.networking.dbsubnet_id
 }
+    
+ resource "azurerm_storage_account" "example" {
+  name                     = "storageaccountname"
+  resource_group_name      = module.resourcegroup.resource_group_name 
+  location                 = module.resourcegroup.location_id
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+)    
 
 module "compute" {
   source         = "./modules/compute"
@@ -39,6 +47,13 @@ module "compute" {
   app_host_name = var.app_host_name
   app_username = var.app_username
   app_os_password = var.app_os_password
+}
+  resource "azurerm_log_analytics_workspace" "example" {
+  name                = "acctest-01"
+  location            = module.resourcegroup.location_id
+  resource_group_name = module.resourcegroup.resource_group_name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
 }
 
 module "database" {
